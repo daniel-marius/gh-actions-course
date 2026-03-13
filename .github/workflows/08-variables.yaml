@@ -7,6 +7,7 @@ on:
 env:
     WORKFLOW_VAR: 'I am a workflow env var'
     OVERWRITTEN: 'I will overwritten'
+    
 jobs:
     echo:
         runs-on: ubuntu-latest
@@ -29,3 +30,10 @@ jobs:
                 OVERWRITTEN: 'I have been overwritten at the step level'
               run: |
                 echo "Overwritten: ${{ env.OVERWRITTEN }}"
+    echo-dev:
+        runs-on: ubuntu-latest
+        environment: dev
+        steps:
+            - name: Print Dev Env Variables
+              run: |
+                echo "DEV ENV var: ${{ env.DEV_ENV }}"
