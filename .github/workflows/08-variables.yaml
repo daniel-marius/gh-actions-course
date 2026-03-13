@@ -7,7 +7,7 @@ on:
 env:
     WORKFLOW_VAR: 'I am a workflow env var'
     OVERWRITTEN: 'I will overwritten'
-    
+
 jobs:
     echo:
         runs-on: ubuntu-latest
@@ -18,10 +18,10 @@ jobs:
             - name: Print Env Variables
               env:
                 STEP_VAR: "I am using a step var"
-                step_var2: "I am another step env var"
+                STEP_VAR2: "I am another step env var"
               run: |
                 echo "Step env var: ${{ env.STEP_VAR }}"
-                echo "Step env var 2: $step_var2"
+                echo "Step env var 2: $STEP_VAR2"
                 echo "Job env var: ${{ env.JOB_VAR }}"
                 echo "Job env var: ${{ env.WORKFLOW_VAR }}"
                 echo "Overwritten: ${{ env.OVERWRITTEN }}"
@@ -36,4 +36,4 @@ jobs:
         steps:
             - name: Print Dev Env Variables
               run: |
-                echo "DEV ENV var: ${{ env.DEV_ENV }}"
+                echo "DEV ENV var: ${{ vars.DEV_ENV }}"
