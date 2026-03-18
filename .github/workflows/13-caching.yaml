@@ -26,11 +26,11 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                 node-version: ${{ inputs.node-version }}
-            - name: Install dependecies
-              run: npm run ci
+            - name: Install dependencies
+              run: npm ci
             - name: Testing
               run: npm run test
             - name: Building
