@@ -60,7 +60,11 @@ async function run() {
         cwd: workingDir
     });
 
+    let updatesAvailable = false;
+
     if (gitStatus.stdout.length > 0) {
+        updatesAvailable = true;
+
         logger.debug('There are updates available!');
         logger.debug('Setup git credentials!');
 
