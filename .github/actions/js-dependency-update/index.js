@@ -4,6 +4,19 @@ const github = require("@actions/github");
 
 const validateBranchName = ({ branchName }) => /^[a-zA-Z0-9_\-\.\/]+$/.test(branchName);
 const validateDirectoryName = ({ dirName }) => /^[a-zA-Z0-9_\-\/]+$/.test(dirName);
+const setupLogger = ({ debug, prefix } = { debug: false, prefix: '' }) => ({
+    debug: (message) => {
+        if (debug) {
+            core.info(`DEBUG ${prefix}${prefix ? ' : ' : ''}${message}`);
+        }
+    },
+    info: (message) => {
+        core.info(`INFO ${prefix}${prefix ? ' : ' : ''}${message}`);
+    },
+    warn: (message) => {
+        core.error(`${prefix}${prefix ? ' : ' : ''}${message}`);
+    },
+});
 
 async function run() {
     const baseBranch = core.getInput('base-branch', { required: true });
@@ -11,11 +24,14 @@ async function run() {
     const ghToken = core.getInput('gh-token', { required: true });
     const workingDir = core.getInput('working-directory', { required: true });
     const debug = core.getInput('debug');
+    const logger = setupLogger({ debug, prefix: '[js-dependency-update]' });
 
     const commonExecOpts = {
         cwd: workingDir,
     };
     core.setSecret(ghToken);
+
+    logger.debug('Validating inputs base-branch, target-branch, working-directory');
 
     if (!validateBranchName({ branchName: baseBranch })) {
         core.setFailed("Invalid base branch name");
@@ -32,9 +48,9 @@ async function run() {
         return;
     }   
 
-    core.info(`[js-dependency-update] : base branch is ${baseBranch}`);
-    core.info(`[js-dependency-update] : target branch is ${targetBranch}`);
-    core.info(`[js-dependency-update] : working directory is ${workingDir}`);
+    logger.debug(`base branch is ${baseBranch}`);
+    logger.debug(`target branch is ${targetBranch}`);
+    logger.debug(`working directory is ${workingDir}`);
 
     await exec.exec('npm update', [], {
         ...commonExecOpts
@@ -45,7 +61,8 @@ async function run() {
     });
 
     if (gitStatus.stdout.length > 0) {
-        core.info('[js-dependency-update] : There are updates available!');
+        logger.debug('There are updates available!');
+        logger.debug('Setup git credentials!');
         await exec.exec(`git config --global user.name "daniel-marius"`);
         await exec.exec(`git config --global user.email "danieladam01995@gmail.com"`);
         await exec.exec(`git checkout -b ${targetBranch}`, [], {
@@ -60,8 +77,10 @@ async function run() {
         await exec.exec(`git push -u origin ${targetBranch} --force`, [], {
             ...commonExecOpts,
         });
+        logger.debug('Fetch Octokit API!');
         const octokit = github.getOctokit(ghToken);
         try {
+            logger.debug(`Creating a PR using target branch: ${targetBranch}`);
             await octokit.rest.pulls.create({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
@@ -71,14 +90,13 @@ async function run() {
                 head: targetBranch,
             });
         } catch (e) {
-            core.error('[js-dependency-update] : Something went wrong while creating the PR. Check logs below.');
+            logger.error('Something went wrong while creating the PR. Check logs below.');
             core.setFailed(e.message);
             core.warning(e);
         }
     } else {
-        core.info('[js-dependency-update] : No updates at this point in time');
+        logger.info('No updates at this point in time');
     }
-
 
     /*
     1. Parse inputs: 
