@@ -21,7 +21,7 @@ const setupLogger = ({ debug, prefix } = { debug: false, prefix: '' }) => ({
 async function run() {
     const baseBranch = core.getInput('base-branch', { required: true });
     const targetBranch = core.getInput('target-branch', { required: true });
-    const ghToken = core.getInput('gh-token', { required: true });
+    const ghToken = core.getInput('github-token', { required: true });
     const workingDir = core.getInput('working-directory', { required: true });
     const debug = core.getInput('debug');
     const logger = setupLogger({ debug, prefix: '[js-dependency-update]' });
