@@ -119,6 +119,7 @@ async function run() {
     5 Otherwise, conclude the custom action
     */ 
     logger.debug(`Setting updates-available output to ${updatesAvailable}`);
+    core.setOutput('updates-available', updatesAvailable);
 }
 
 run();
