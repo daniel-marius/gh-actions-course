@@ -63,6 +63,7 @@ async function run() {
     if (gitStatus.stdout.length > 0) {
         logger.debug('There are updates available!');
         logger.debug('Setup git credentials!');
+
         await exec.exec(`git config --global user.name "daniel-marius"`);
         await exec.exec(`git config --global user.email "danieladam01995@gmail.com"`);
         await exec.exec(`git checkout -b ${targetBranch}`, [], {
@@ -77,8 +78,10 @@ async function run() {
         await exec.exec(`git push -u origin ${targetBranch} --force`, [], {
             ...commonExecOpts,
         });
+
         logger.debug('Fetch Octokit API!');
         const octokit = github.getOctokit(ghToken);
+
         try {
             logger.debug(`Creating a PR using target branch: ${targetBranch}`);
             await octokit.rest.pulls.create({
@@ -111,7 +114,8 @@ async function run() {
         4.2 Create a PR to the base-branch using octokit API (GitHub API)
     5 Otherwise, conclude the custom action
     */ 
-    core.info("I am a custom JS action");
+    logger.debug(`Setting updates-available output to ${updatesAvailable}`);
+    core.setOutput('updates-available', updatesAvailable);
 }
 
 run();

@@ -7,17 +7,23 @@ inputs:
     default: main
     required: false
   target-branch:
-    description: update-Dependencies
+    description: The branch from which the PR is created
     default: update-dependencies
+    required: false
   working-directory:
     description: The working directory of the project to check for dependency updates
     required: true
   gh-token:
-    description: Authntication token with repository access. Must have write access to contents and pull-request
+    description: Authntication token with repository access. Must have write access to contents and pull-requests
     required: true
   debug:
     description: Whether to output debug messages to the console
     default: 'false'
+
+outputs:
+  updates-available:
+    description: Wheter there are updates description
+
 runs:
   using: node24
   main: index.js
