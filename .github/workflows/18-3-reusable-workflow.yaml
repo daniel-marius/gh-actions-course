@@ -9,4 +9,4 @@ jobs:
         with:
             target-directory: dummy-dir
     e2e-tests:
-        uses: daniel-marius/gh-actions-course-example-e2e/.github/workflows/e2e.yaml
+        uses: daniel-marius/gh-actions-course-example-e2e/.github/workflows/e2e.yaml@main
