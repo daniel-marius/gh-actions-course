@@ -2,6 +2,11 @@ name: 18 - 3 - Reusable Workflows
 
 on:
     workflow_dispatch:
+        inputs:
+            node-version:
+                description: NodeJS version to use
+                default: 24.x
+                required: true
 
 jobs:
     deploy:
@@ -11,5 +16,7 @@ jobs:
     e2e-tests:
         uses: daniel-marius/gh-actions-course-example-e2e/.github/workflows/e2e.yaml@main
         needs: deploy
+        with:
+            node-version: ${{ inputs.node-version }}
         secrets:
             access-token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
